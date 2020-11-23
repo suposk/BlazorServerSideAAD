@@ -8,11 +8,11 @@ namespace BlazorServerSideAAD.Data
     public class WeatherForecastService
     {
 
-        public WeatherForecastService(IOptions<AzureAd> azureAd)
-        {
-            _azureAd = azureAd;
-            var sec = azureAd.Value.ClientSecret;
-        }
+        //public WeatherForecastService(IOptions<AzureAd> azureAd)
+        //{
+        //    _azureAd = azureAd;
+        //    var sec = azureAd.Value.ClientSecret;
+        //}
 
         private static readonly string[] Summaries = new[]
         {

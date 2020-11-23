@@ -2,6 +2,8 @@
 
 @using BlazorServerSideAAD.Data
 @inject WeatherForecastService ForecastService
+@inject Microsoft.Identity.Web.ITokenAcquisition TokenAcquisitionService
+
 
 <h1>Weather forecast</h1>
 
@@ -42,5 +44,24 @@ else
     protected override async Task OnInitializedAsync()
     {
         forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+
+        try
+        {
+
+            var at = await TokenAcquisitionService.GetAccessTokenForUserAsync(Startup.scopesToRequestList);
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", at);
+
+
+            var data = await client.GetAsync("https://graph.microsoft.com/v1.0/me");
+            if (data != null && data.IsSuccessStatusCode)
+            {
+
+            }
+        }
+        catch (Exception ex)
+        {
+
+        }
     }
 }
