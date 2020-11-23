@@ -25,8 +25,9 @@ namespace BlazorServerSideAAD
 
     public class Startup
     {
-        public const string scopesToRequest = "user.read";        
-        public static List<string> scopesToRequestList = new List<string>(){ "user.read"};
+        public const string scopesToRequest = "User.Read";        
+        public static List<string> scopesToRequestList = new List<string>(){ "User.Read"};
+        MicrosoftIdentityOptions _microsoftIdentityOptions = null;
 
         public Startup(IConfiguration configuration)
         {
@@ -45,7 +46,7 @@ namespace BlazorServerSideAAD
             //services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
             //    .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"));
 
-            //v2 start
+            ////v2 start
             //services.AddMicrosoftIdentityWebAppAuthentication(Configuration);
 
             //v2 advanced
@@ -62,19 +63,29 @@ namespace BlazorServerSideAAD
             //             .EnableTokenAcquisitionToCallDownstreamApi(new string[] { scopesToRequest })
             //                  .AddInMemoryTokenCaches();
 
+
             ////v4 advanced
             //services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
             //                .AddMicrosoftIdentityWebApp(options =>
             //                {
             //                    Configuration.Bind("AzureAD", options);
             //                    options.Events ??= new OpenIdConnectEvents();
-            //                    options.Events.OnTokenValidated += OnTokenValidatedFunc;                                
+            //                    options.Events.OnTokenValidated += OnTokenValidatedFunc;
+            //                    _microsoftIdentityOptions = options;
             //                })
-            //                .EnableTokenAcquisitionToCallDownstreamApi((op) => 
-            //                {                                
+            //                .EnableTokenAcquisitionToCallDownstreamApi((op) =>
+            //                {
+            //                    op.ClientId = _microsoftIdentityOptions.ClientId;
+            //                    op.ClientSecret = _microsoftIdentityOptions.ClientSecret;
+            //                    op.Instance = _microsoftIdentityOptions.Instance;
+            //                    op.TenantId = _microsoftIdentityOptions.TenantId;
+            //                    op.RedirectUri = _microsoftIdentityOptions.CallbackPath;
+            //                    //op.ClientCapabilities = _microsoftIdentityOptions.
 
             //                }, scopesToRequestList)
             //                .AddInMemoryTokenCaches();
+
+            //services.AddTokenAcquisition(false);
 
             services.AddControllersWithViews()
                 .AddMicrosoftIdentityUI();
@@ -90,9 +101,12 @@ namespace BlazorServerSideAAD
                 .AddMicrosoftIdentityConsentHandler();
             services.AddSingleton<WeatherForecastService>();
 
+            //services.AddSignalR();
+
             var sec = Configuration.GetSection("JanoSetting").Value;
             var sec2 = Configuration.GetSection("AzureAd").GetSection("ClientSecret").Value;
             var sec3 = Configuration.GetValue<string>("AzureAd:ClientSecret");
+            Console.WriteLine($"Secret : {sec3}");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
