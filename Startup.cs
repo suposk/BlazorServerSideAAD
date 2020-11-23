@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace BlazorServerSideAAD
 {
-    //v1 setup with wizazd
+    //v2 
 
     public class Startup
     {
@@ -34,8 +34,11 @@ namespace BlazorServerSideAAD
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"));
+            //services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+            //    .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"));
+
+            services.AddMicrosoftIdentityWebAppAuthentication(Configuration);
+
             services.AddControllersWithViews()
                 .AddMicrosoftIdentityUI();
 
