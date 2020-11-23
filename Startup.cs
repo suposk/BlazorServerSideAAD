@@ -19,6 +19,8 @@ using System.Threading.Tasks;
 
 namespace BlazorServerSideAAD
 {
+    //v1 setup with wizazd
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
