@@ -37,7 +37,17 @@ namespace BlazorServerSideAAD
             //services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
             //    .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"));
 
-            services.AddMicrosoftIdentityWebAppAuthentication(Configuration);
+            //v2 start
+            //services.AddMicrosoftIdentityWebAppAuthentication(Configuration);
+
+            //v2 advanced
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                    .AddMicrosoftIdentityWebApp(options =>
+                    {
+                        Configuration.Bind("AzureAD", options);
+                        options.Events ??= new OpenIdConnectEvents();
+                        options.Events.OnTokenValidated += OnTokenValidatedFunc;
+                    });
 
             services.AddControllersWithViews()
                 .AddMicrosoftIdentityUI();
@@ -82,6 +92,14 @@ namespace BlazorServerSideAAD
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
+        }
+
+        private async Task OnTokenValidatedFunc(TokenValidatedContext context)
+        {
+            var res = context.Result;
+
+            // Custom code here
+            await Task.CompletedTask.ConfigureAwait(false);
         }
     }
 }
