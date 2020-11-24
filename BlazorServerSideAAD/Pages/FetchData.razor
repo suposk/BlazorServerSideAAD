@@ -44,45 +44,45 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _httpClient = HttpClientFactory.CreateClient();
-        forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
-
-        // get a token
-        //var token = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "User.Read", "Mail.Read" });
-        var token = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "User.Read" });
-
-        // make API call
-        _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        var dataRequest = await _httpClient.GetAsync("https://graph.microsoft.com/beta/me");
-
-        if (dataRequest.IsSuccessStatusCode)
+        try
         {
-            var userData = System.Text.Json.JsonDocument.Parse(await dataRequest.Content.ReadAsStreamAsync());
-            userDisplayName = userData.RootElement.GetProperty("displayName").GetString();
-        }
+            _httpClient = HttpClientFactory.CreateClient();
+            forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
 
-        var mailRequest = await _httpClient.GetAsync("https://graph.microsoft.com/beta/me/messages?$select=subject,receivedDateTime,sender&$top=10");
+            // get a token
+            //var token = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "User.Read", "Mail.Read" });
+            var token = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "User.Read" });
 
-        if (mailRequest.IsSuccessStatusCode)
-        {
-            var mailData = System.Text.Json.JsonDocument.Parse(await mailRequest.Content.ReadAsStreamAsync());
-            var messagesArray = mailData.RootElement.GetProperty("value").EnumerateArray();
+            // make API call
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            var dataRequest = await _httpClient.GetAsync("https://graph.microsoft.com/beta/me");
 
-            foreach (var m in messagesArray)
+            if (dataRequest.IsSuccessStatusCode)
             {
-                var message = new MailMessage();
-                message.Subject = m.GetProperty("subject").GetString();
-                message.Sender = m.GetProperty("sender").GetProperty("emailAddress").GetProperty("address").GetString();
-                message.ReceivedTime = m.GetProperty("receivedDateTime").GetDateTime();
-                messages.Add(message);
+                var userData = System.Text.Json.JsonDocument.Parse(await dataRequest.Content.ReadAsStreamAsync());
+                userDisplayName = userData.RootElement.GetProperty("displayName").GetString();
             }
 
-            //messages.AddRange(messagesArray.Select(x => new MailMessage()
-            //{
-            //    Subject = x.GetProperty("subject").GetString(),
-            //    Sender = x.GetProperty("sender").GetProperty("emailAddress").GetProperty("address").GetString(),
-            //    ReceivedTime = x.GetProperty("receivedTime").GetDateTime()
-            //}).ToList());
+            var mailRequest = await _httpClient.GetAsync("https://graph.microsoft.com/beta/me/messages?$select=subject,receivedDateTime,sender&$top=10");
+
+            if (mailRequest.IsSuccessStatusCode)
+            {
+                var mailData = System.Text.Json.JsonDocument.Parse(await mailRequest.Content.ReadAsStreamAsync());
+                var messagesArray = mailData.RootElement.GetProperty("value").EnumerateArray();
+
+                foreach (var m in messagesArray)
+                {
+                    var message = new MailMessage();
+                    message.Subject = m.GetProperty("subject").GetString();
+                    message.Sender = m.GetProperty("sender").GetProperty("emailAddress").GetProperty("address").GetString();
+                    message.ReceivedTime = m.GetProperty("receivedDateTime").GetDateTime();
+                    messages.Add(message);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            userDisplayName = ex?.Message;
         }
     }
 

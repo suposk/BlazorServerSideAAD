@@ -31,37 +31,6 @@ namespace BlazorServerSideAAD
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddHttpClient();
-            //services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-            //    .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
-            //    .EnableTokenAcquisitionToCallDownstreamApi()
-            //    .AddInMemoryTokenCaches()
-            //    ;
-            //services.Configure<MicrosoftIdentityOptions>(options => {
-            //    options.ResponseType = OpenIdConnectResponseType.Code;
-            //});
-            //services.AddAuthorization(options =>
-            //{
-            //    // By default, all incoming requests will be authorized according to the default policy
-            //    options.FallbackPolicy = options.DefaultPolicy;
-            //});
-
-            ////services.AddRazorPages()
-            //    //.AddMvcOptions(options => { })
-            //    //.AddMicrosoftIdentityUI();
-
-            //services.AddControllersWithViews(options =>
-            //{
-            //    //var policy = new AuthorizationPolicyBuilder()
-            //    //    .RequireAuthenticatedUser()
-            //    //    .Build();
-            //    //options.Filters.Add(new AuthorizeFilter(policy));
-            //}).AddMicrosoftIdentityUI();
-
-            //services.AddRazorPages();
-            //services.AddServerSideBlazor();
-            //services.AddSingleton<WeatherForecastService>();
-
             services.AddHttpClient();
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
@@ -87,8 +56,6 @@ namespace BlazorServerSideAAD
             services.AddServerSideBlazor()
                 .AddMicrosoftIdentityConsentHandler();
             services.AddSingleton<WeatherForecastService>();
-
-
 
             var sec = Configuration.GetSection("JanoSetting").Value;
             var sec2 = Configuration.GetSection("AzureAd").GetSection("ClientSecret").Value;
