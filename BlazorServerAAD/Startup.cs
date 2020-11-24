@@ -1,4 +1,7 @@
-using BlazorServerAAD.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authorization;
@@ -10,11 +13,14 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
 using Microsoft.Identity.Web;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
+using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
+using Microsoft.Identity.Web.UI;
+using BlazorServerAAD.Data;
+//using Microsoft.Extensions.Caching.Cosmos;
+//using Microsoft.Azure.Cosmos.Fluent;
 
 namespace BlazorServerAAD
 {
@@ -31,11 +37,21 @@ namespace BlazorServerAAD
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
-            //    .AddAzureAD(options => Configuration.Bind("AzureAd", options));
+            //services.AddCosmosCache((CosmosCacheOptions cacheOptions) =>
+            //{
+            //    cacheOptions.ContainerName = Configuration["CosmosCache:ContainerName"];
+            //    cacheOptions.DatabaseName = Configuration["CosmosCache:DatabaseName"];
+            //    cacheOptions.ClientBuilder = new CosmosClientBuilder(Configuration["CosmosCache:ConnectionString"]);
+            //    cacheOptions.CreateIfNotExists = true;
+            //});
 
-            ////v2 start
-            services.AddMicrosoftIdentityWebAppAuthentication(Configuration);
+            services.AddHttpClient();
+            services.AddMicrosoftWebAppAuthentication(Configuration)
+                // be sure to request all required permissions up-front
+                //.AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { "User.Read", "Mail.Read" })
+                .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { "User.Read" })
+                //.AddDistributedTokenCaches();
+                .AddInMemoryTokenCaches();
 
             services.AddControllersWithViews(options =>
             {
@@ -43,7 +59,7 @@ namespace BlazorServerAAD
                     .RequireAuthenticatedUser()
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
-            });
+            }).AddMicrosoftIdentityUI();
 
             services.AddRazorPages();
             services.AddServerSideBlazor();
