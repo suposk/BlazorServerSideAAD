@@ -50,8 +50,8 @@ else
             forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
 
             // get a token
-            //var token = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "User.Read", "Mail.Read" });
-            var token = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "User.Read" });
+            var token = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "User.Read", "Mail.Read" });
+            //var token = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "User.Read" });
 
             // make API call
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
@@ -64,6 +64,8 @@ else
             }
 
             var mailRequest = await _httpClient.GetAsync("https://graph.microsoft.com/beta/me/messages?$select=subject,receivedDateTime,sender&$top=10");
+            //var mailRequest = await _httpClient.GetAsync("https://graph.microsoft.com/beta/me/messages?$select=createdDateTime,subject,from");
+
 
             if (mailRequest.IsSuccessStatusCode)
             {
