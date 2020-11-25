@@ -81,6 +81,20 @@ else
                     messages.Add(message);
                 }
             }
+
+            //user_impersonation
+            var apiToken = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "user_impersonation" });
+            if (token != apiToken)
+                Console.WriteLine("Tokens are different");
+
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
+            var apiData = await _httpClient.GetAsync("https://localhost:5011/WeatherForecast");
+            if (apiData.IsSuccessStatusCode)
+            {
+                var api = await apiData.Content.ReadAsStreamAsync();
+                // AADSTS65001: The user or administrator has not consented to use the application with ID '8ff7755f-f65f-41ca-9e88-f70215f06fb4' named 'BlazorServerAAD'.Send an interactive authorization request for this user and resource.                
+            }
+
         }
         catch (Exception ex)
         {

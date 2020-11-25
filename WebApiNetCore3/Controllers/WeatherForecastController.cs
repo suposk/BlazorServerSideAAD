@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace WebApiNetCore3.Controllers
@@ -29,6 +30,7 @@ namespace WebApiNetCore3.Controllers
         public IEnumerable<WeatherForecast> Get()
         {
             var ident = HttpContext.User.Identity;
+            string owner = (User?.FindFirst(ClaimTypes.NameIdentifier))?.Value;
 
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast

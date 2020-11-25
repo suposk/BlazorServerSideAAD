@@ -35,6 +35,8 @@ namespace BlazorServerSideAAD
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
                 .EnableTokenAcquisitionToCallDownstreamApi()
+                //.EnableTokenAcquisitionToCallDownstreamApi(new string[] { "User.Read", "Mail.Read" })            
+                //.EnableTokenAcquisitionToCallDownstreamApi(new string[] { "User.Read", "Mail.Read", "user_impersonation" })
                 .AddInMemoryTokenCaches()
                 ;
 
