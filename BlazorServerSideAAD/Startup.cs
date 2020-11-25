@@ -51,7 +51,8 @@ namespace BlazorServerSideAAD
             services.AddAuthorization(options =>
             {
                 // By default, all incoming requests will be authorized according to the default policy
-                options.FallbackPolicy = options.DefaultPolicy;
+                //Will automatical sign in user
+                //options.FallbackPolicy = options.DefaultPolicy;
             });
 
             services.AddRazorPages();

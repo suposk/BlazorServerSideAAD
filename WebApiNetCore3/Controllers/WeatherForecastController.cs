@@ -30,7 +30,7 @@ namespace WebApiNetCore3.Controllers
         {
             _logger = logger;
             _tokenAcquisition = tokenAcquisition;
-            _httpClient = new HttpClient();
+            //_httpClient = new HttpClient();
         }
 
         [HttpGet]
