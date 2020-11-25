@@ -96,6 +96,12 @@ else
                 // AADSTS65001: The user or administrator has not consented to use the application with ID '8ff7755f-f65f-41ca-9e88-f70215f06fb4' named 'BlazorServerAAD'.Send an interactive authorization request for this user and resource.                
             }
 
+
+            string[] scopesManagment = new string[] { "https://management.azure.com/.default" };
+            string manToken = await TokenAcquisitionService.GetAccessTokenForUserAsync(scopesManagment);           
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", manToken);
+            var scores = await _httpClient.GetAsync("https://management.azure.com/subscriptions/33fb38df-688e-4ca1-8dd8-b46e26262ff8/providers/Microsoft.Security/secureScores?api-version=2020-01-01-preview");
+
         }
         catch (Exception ex)
         {
