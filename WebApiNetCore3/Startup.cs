@@ -31,10 +31,18 @@ namespace WebApiNetCore3
             //services.AddAuthentication(AzureADDefaults.BearerAuthenticationScheme)
             //    .AddAzureADBearer(options => Configuration.Bind("AzureAd", options));
 
-            services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
-                    .AddMicrosoftIdentityWebApi(Configuration);
+            //services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
+            //        .AddMicrosoftIdentityWebApi(Configuration);
 
-            //services.AddMicrosoftIdentityWebApiAuthentication(Configuration);
+            //services.AddMicrosoftIdentityWebApiAuthentication(Configuration)
+            //    .EnableTokenAcquisitionToCallDownstreamApi()
+            //    .AddInMemoryTokenCaches();
+            //;
+
+            services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
+                    .AddMicrosoftIdentityWebApi(Configuration, "AzureAd")
+                        .EnableTokenAcquisitionToCallDownstreamApi()
+                        .AddInMemoryTokenCaches();
 
             services.AddControllers();
         }
