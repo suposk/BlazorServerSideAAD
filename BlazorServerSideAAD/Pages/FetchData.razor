@@ -83,12 +83,13 @@ else
             }
 
             //user_impersonation
-            var apiToken = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "user_impersonation" });
+            //var apiToken = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "user_impersonation" });
+            var apiToken = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "https://jansupolikhotmail.onmicrosoft.com/WebApiNetCore3/user_impersonation" });
             if (token != apiToken)
                 Console.WriteLine("Tokens are different");
 
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
-            var apiData = await _httpClient.GetAsync("https://localhost:5011/WeatherForecast");
+            var apiData = await _httpClient.GetAsync("https://localhost:5011/api/WeatherForecast");
             if (apiData.IsSuccessStatusCode)
             {
                 var api = await apiData.Content.ReadAsStreamAsync();
