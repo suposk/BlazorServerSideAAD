@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+//using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
@@ -19,6 +19,8 @@ using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
 using Microsoft.Identity.Web.UI;
 using BlazorServerAAD.Data;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 //using Microsoft.Extensions.Caching.Cosmos;
 //using Microsoft.Azure.Cosmos.Fluent;
 
@@ -46,23 +48,32 @@ namespace BlazorServerAAD
             //});
 
             services.AddHttpClient();
-            services.AddMicrosoftWebAppAuthentication(Configuration)
-                // be sure to request all required permissions up-front
-                //.AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { "User.Read", "Mail.Read" })
-                .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { "User.Read" })
-                //.AddDistributedTokenCaches();
-                .AddInMemoryTokenCaches();
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
+                .EnableTokenAcquisitionToCallDownstreamApi()
+                //.EnableTokenAcquisitionToCallDownstreamApi(new string[] { "User.Read", "Mail.Read" })            
+                //.EnableTokenAcquisitionToCallDownstreamApi(new string[] { "User.Read", "Mail.Read", "user_impersonation" })
+                .AddInMemoryTokenCaches()
+                ;
 
-            services.AddControllersWithViews(options =>
+            services.Configure<MicrosoftIdentityOptions>(options =>
             {
-                //var policy = new AuthorizationPolicyBuilder()
-                //    .RequireAuthenticatedUser()
-                //    .Build();
-                //options.Filters.Add(new AuthorizeFilter(policy));
-            }).AddMicrosoftIdentityUI();
+                options.ResponseType = OpenIdConnectResponseType.Code;
+            });
+
+            services.AddControllersWithViews()
+                .AddMicrosoftIdentityUI();
+
+            services.AddAuthorization(options =>
+            {
+                // By default, all incoming requests will be authorized according to the default policy
+                //Will automatical sign in user
+                //options.FallbackPolicy = options.DefaultPolicy;
+            });
 
             services.AddRazorPages();
-            services.AddServerSideBlazor();
+            services.AddServerSideBlazor()
+                .AddMicrosoftIdentityConsentHandler();
             services.AddSingleton<WeatherForecastService>();
 
             var sec = Configuration.GetSection("JanoSetting").Value;
