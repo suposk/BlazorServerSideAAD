@@ -1,9 +1,11 @@
 ﻿@page "/fetchdata"
 
 @using BlazorServerAAD.Data
+@using Client.Services
 @inject WeatherForecastService ForecastService
 @inject IHttpClientFactory HttpClientFactory
 @inject Microsoft.Identity.Web.ITokenAcquisition TokenAcquisitionService
+@inject ISampleService SampleService
 
 <h1>Weather forecast</h1>
 
@@ -44,6 +46,8 @@ else
     {
         try
         {
+            var sample = await SampleService.RandomText("Jano");
+
             _httpClient = HttpClientFactory.CreateClient();
             forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
 
