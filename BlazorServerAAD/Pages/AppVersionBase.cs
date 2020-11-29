@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace BlazorServerAAD.Pages
@@ -40,11 +41,16 @@ namespace BlazorServerAAD.Pages
                 var apiToken = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "https://jansupolikhotmail.onmicrosoft.com/WebApiNetCore3/user_impersonation" });
 
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
-                var apiData = await _httpClient.GetAsync("https://localhost:5011/api/version/21");
+                var apiData = await _httpClient.GetAsync("https://localhost:5011/api/version/20000");
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
                 if (apiData.IsSuccessStatusCode)
                 {
-                    var api = await apiData.Content.ReadAsStreamAsync();
-                    // AADSTS65001: The user or administrator has not consented to use the application with ID '8ff7755f-f65f-41ca-9e88-f70215f06fb4' named 'BlazorServerAAD'.Send an interactive authorization request for this user and resource.
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    var obj = JsonSerializer.Deserialize<VersionDto>(content, options);
                 }
             }
             catch (Exception ex)
@@ -54,4 +60,16 @@ namespace BlazorServerAAD.Pages
             await base.OnInitializedAsync();
         }
     }
+
+    public class VersionDto
+    {
+        public int Version { get; set; }
+
+        public string Link { get; set; }
+
+        public string Details { get; set; }
+
+        public DateTime CreatedAt { get; set; }
+    }
+
 }
