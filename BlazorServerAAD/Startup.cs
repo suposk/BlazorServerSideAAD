@@ -86,10 +86,10 @@ namespace BlazorServerAAD
             services.AddSingleton<ISampleService, SampleService>();
             services.AddScoped<IVersionService, VersionService>();
 
-            var sec = Configuration.GetSection("JanoSetting").Value;
-            var sec2 = Configuration.GetSection("AzureAd").GetSection("ClientSecret").Value;
-            var sec3 = Configuration.GetValue<string>("AzureAd:ClientSecret");
-            Console.WriteLine($"Secret : {sec3.Substring(startIndex:0,length:3)}");
+            var janoSet = Configuration.GetSection("JanoSetting").Value;
+            Console.WriteLine($"JanoSetting : {janoSet}");
+            var sec = Configuration.GetValue<string>("AzureAd:ClientSecret");
+            Console.WriteLine($"Secret first 3 char: {sec.Substring(startIndex:0,length:3)}");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

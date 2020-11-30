@@ -13,6 +13,7 @@ namespace Client.NetCore.Services
     {
         //const string apiPart = "https://localhost:5011/api/version/";
         const string apiPart = "api/version/";
+        const string scope = "https://jansupolikhotmail.onmicrosoft.com/WebApiNetCore3/user_impersonation";
 
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITokenAcquisition _tokenAcquisition;
@@ -32,7 +33,7 @@ namespace Client.NetCore.Services
                     _httpClient = _httpClientFactory.CreateClient("api");
 
                 //user_impersonation
-                var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { "https://jansupolikhotmail.onmicrosoft.com/WebApiNetCore3/user_impersonation" });
+                var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
 
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
                 var url = $"{apiPart}{id}";
@@ -61,7 +62,7 @@ namespace Client.NetCore.Services
                     _httpClient = _httpClientFactory.CreateClient("api");
 
                 //user_impersonation
-                var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { "https://jansupolikhotmail.onmicrosoft.com/WebApiNetCore3/user_impersonation" });
+                var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
 
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
                 var url = $"{apiPart}";
@@ -91,7 +92,7 @@ namespace Client.NetCore.Services
                     _httpClient = _httpClientFactory.CreateClient("api");
 
                 //user_impersonation
-                var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { "https://jansupolikhotmail.onmicrosoft.com/WebApiNetCore3/user_impersonation" });
+                var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
 
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
                 var url = $"{apiPart}";
@@ -121,7 +122,7 @@ namespace Client.NetCore.Services
                     _httpClient = _httpClientFactory.CreateClient("api");
 
                 //user_impersonation
-                var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { "https://jansupolikhotmail.onmicrosoft.com/WebApiNetCore3/user_impersonation" });
+                var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
 
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
                 var url = $"{apiPart}{id}";
