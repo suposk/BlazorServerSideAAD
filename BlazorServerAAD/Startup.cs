@@ -48,7 +48,12 @@ namespace BlazorServerAAD
             //    cacheOptions.CreateIfNotExists = true;
             //});
 
-            services.AddHttpClient();
+            string ApiEndpoint = Configuration.GetValue<string>("ApiEndpoint");
+            services.AddHttpClient("api", (client) => 
+            {
+                client.BaseAddress = new Uri(ApiEndpoint);
+            });
+
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
                 .EnableTokenAcquisitionToCallDownstreamApi()

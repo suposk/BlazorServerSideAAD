@@ -12,7 +12,8 @@ namespace BlazorServerAAD.Pages
 {
     public class AppVersionBase : ComponentBase
     {
-        const string end = "https://localhost:5011/api/version/";
+        //const string apiPart = "https://localhost:5011/api/version/";
+        const string apiPart = "api/version/";
 
         [Inject]
         public IConfiguration Configuration { get; set; }
@@ -23,13 +24,13 @@ namespace BlazorServerAAD.Pages
         [Inject]
         Microsoft.Identity.Web.ITokenAcquisition TokenAcquisitionService { get; set; }
 
-        public string ApiEndpoint
-        {
-            get
-            {
-                return this.Configuration.GetValue<string>("ApiEndpoint");
-            }
-        }
+        //public string ApiEndpoint
+        //{
+        //    get
+        //    {
+        //        return this.Configuration.GetValue<string>("ApiEndpoint");
+        //    }
+        //}
 
         private HttpClient _httpClient;
         protected async override Task OnInitializedAsync()
@@ -43,7 +44,7 @@ namespace BlazorServerAAD.Pages
                 if (r != null)
                 {
                     var v2 = await GetVersion(r.Version);
-                    var deleted = await DeleteVersion(v.Version);
+                    //var deleted = await DeleteVersion(v.Version);
                 }
             }
         }
@@ -53,13 +54,13 @@ namespace BlazorServerAAD.Pages
             try
             {
                 if (_httpClient == null)
-                    _httpClient = HttpClientFactory.CreateClient();
+                    _httpClient = HttpClientFactory.CreateClient("api");
 
                 //user_impersonation
                 var apiToken = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "https://jansupolikhotmail.onmicrosoft.com/WebApiNetCore3/user_impersonation" });
 
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);                
-                var url = $"{end}{id}";
+                var url = $"{apiPart}{id}";
                 var apiData = await _httpClient.GetAsync(url).ConfigureAwait(false);
                 var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
@@ -83,13 +84,13 @@ namespace BlazorServerAAD.Pages
             try
             {
                 if (_httpClient == null)
-                    _httpClient = HttpClientFactory.CreateClient();
+                    _httpClient = HttpClientFactory.CreateClient("api");
 
                 //user_impersonation
                 var apiToken = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "https://jansupolikhotmail.onmicrosoft.com/WebApiNetCore3/user_impersonation" });
 
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
-                var url = $"{end}";
+                var url = $"{apiPart}";
                 var options = new JsonSerializerOptions {PropertyNameCaseInsensitive = true };
                 var httpcontent = new StringContent(JsonSerializer.Serialize(add, options), Encoding.UTF8, "application/json");
                 var apiData = await _httpClient.PostAsync(url, httpcontent).ConfigureAwait(false);
@@ -113,13 +114,13 @@ namespace BlazorServerAAD.Pages
             try
             {
                 if (_httpClient == null)
-                    _httpClient = HttpClientFactory.CreateClient();
+                    _httpClient = HttpClientFactory.CreateClient("api");
 
                 //user_impersonation
                 var apiToken = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "https://jansupolikhotmail.onmicrosoft.com/WebApiNetCore3/user_impersonation" });
 
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
-                var url = $"{end}{id}";
+                var url = $"{apiPart}{id}";
                 var apiData = await _httpClient.DeleteAsync(url).ConfigureAwait(false);                
 
                 if (apiData.IsSuccessStatusCode)                
