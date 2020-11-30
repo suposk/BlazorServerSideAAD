@@ -35,7 +35,7 @@ namespace BlazorServerAAD.Pages
         private HttpClient _httpClient;
         protected async override Task OnInitializedAsync()
         {
-            await base.OnInitializedAsync();
+            await base.OnInitializedAsync();            
             var v = await GetVersion();           
             if (v != null)
             {
@@ -43,7 +43,9 @@ namespace BlazorServerAAD.Pages
                 var r = await AddVersion(add);
                 if (r != null)
                 {
-                    var v2 = await GetVersion(r.Version);
+                    //var v2 = await GetVersion(r.Version);
+                    var all = await GetAllVersion();
+
                     //var deleted = await DeleteVersion(v.Version);
                 }
             }
@@ -68,6 +70,35 @@ namespace BlazorServerAAD.Pages
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
                     var version = JsonSerializer.Deserialize<VersionDto>(content, options);
+                    return version;
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return null;
+        }
+
+        private async Task<List<VersionDto>> GetAllVersion()
+        {
+            try
+            {
+                if (_httpClient == null)
+                    _httpClient = HttpClientFactory.CreateClient("api");
+
+                //user_impersonation
+                var apiToken = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "https://jansupolikhotmail.onmicrosoft.com/WebApiNetCore3/user_impersonation" });
+
+                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
+                var url = $"{apiPart}";
+                var apiData = await _httpClient.GetAsync(url).ConfigureAwait(false);
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    var version = JsonSerializer.Deserialize<List<VersionDto>>(content, options);
                     return version;
                 }
             }
