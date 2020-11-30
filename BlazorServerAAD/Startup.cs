@@ -22,6 +22,7 @@ using BlazorServerAAD.Data;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Client.Services;
+using Client.NetCore.Services;
 //using Microsoft.Extensions.Caching.Cosmos;
 //using Microsoft.Azure.Cosmos.Fluent;
 
@@ -83,6 +84,7 @@ namespace BlazorServerAAD
 
             services.AddSingleton<WeatherForecastService>();
             services.AddSingleton<ISampleService, SampleService>();
+            services.AddScoped<IVersionService, VersionService>();
 
             var sec = Configuration.GetSection("JanoSetting").Value;
             var sec2 = Configuration.GetSection("AzureAd").GetSection("ClientSecret").Value;
