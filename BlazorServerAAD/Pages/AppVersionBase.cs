@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -11,6 +12,8 @@ namespace BlazorServerAAD.Pages
 {
     public class AppVersionBase : ComponentBase
     {
+        const string end = "https://localhost:5011/api/version/";
+
         [Inject]
         public IConfiguration Configuration { get; set; }
 
@@ -31,9 +34,53 @@ namespace BlazorServerAAD.Pages
         private HttpClient _httpClient;
         protected async override Task OnInitializedAsync()
         {
-            try
-            {           
+            await base.OnInitializedAsync();
+            var v = await GetVersion();           
+            if (v != null)
+            {
+                VersionDto add = new VersionDto { Link = "www.bing.com", Version = v.Version + 1, Details= $"Created in client at {DateTime.Now.ToShortTimeString()}" };
+                var r = await AddVersion(add);
+                if (r != null)
+                {
+                    var v2 = await GetVersion(r.Version);
+                }
+            }
+        }
 
+        private async Task<VersionDto> GetVersion(int id = 1)
+        {
+            try
+            {
+                if (_httpClient == null)
+                    _httpClient = HttpClientFactory.CreateClient();
+
+                //user_impersonation
+                var apiToken = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "https://jansupolikhotmail.onmicrosoft.com/WebApiNetCore3/user_impersonation" });
+
+                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);                
+                var url = $"{end}{id}";
+                var apiData = await _httpClient.GetAsync(url);
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    var version = JsonSerializer.Deserialize<VersionDto>(content, options);
+                    return version;
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return null;
+        }
+
+
+        private async Task<VersionDto> AddVersion(VersionDto add)
+        {
+            try
+            {
                 if (_httpClient == null)
                     _httpClient = HttpClientFactory.CreateClient();
 
@@ -41,26 +88,23 @@ namespace BlazorServerAAD.Pages
                 var apiToken = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "https://jansupolikhotmail.onmicrosoft.com/WebApiNetCore3/user_impersonation" });
 
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
-                var id = 20;
-                var url = $"https://localhost:5011/api/version/{id}";
-                var apiData = await _httpClient.GetAsync(url);
-
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                };
+                var url = $"{end}";
+                var options = new JsonSerializerOptions {PropertyNameCaseInsensitive = true };
+                var httpcontent = new StringContent(JsonSerializer.Serialize(add, options), Encoding.UTF8, "application/json");
+                var apiData = await _httpClient.PostAsync(url, httpcontent);
 
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
                     var version = JsonSerializer.Deserialize<VersionDto>(content, options);
+                    return version;
                 }
             }
             catch (Exception ex)
             {
- 
+
             }
-            await base.OnInitializedAsync();
+            return null;
         }
     }
 
