@@ -21,6 +21,8 @@ namespace BlazorServerAAD.Pages
         [Inject]
         public IVersionService VersionService { get; set; }
 
+        public string Result { get; private set; }
+
         //public string ApiEndpoint
         //{
         //    get
@@ -32,6 +34,8 @@ namespace BlazorServerAAD.Pages
 
         protected async override Task OnInitializedAsync()
         {
+            Result = null;
+
             await base.OnInitializedAsync();            
             var v = await VersionService.GetVersion();           
             if (v != null)
@@ -44,6 +48,10 @@ namespace BlazorServerAAD.Pages
                 //    //var deleted = await DeleteVersion(v.Version);
                 //}
                 var all = await VersionService.GetAllVersion();
+                int sec = 1;
+                await Task.Delay(sec * 1000);
+
+                Result = $"Found {all.Count} version. Loaded with {sec} second of simulation delay";
             }
         }
 

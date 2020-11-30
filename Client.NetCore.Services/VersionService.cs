@@ -14,6 +14,7 @@ namespace Client.NetCore.Services
         //const string apiPart = "https://localhost:5011/api/version/";
         const string apiPart = "api/version/";
         const string scope = "https://jansupolikhotmail.onmicrosoft.com/WebApiNetCore3/user_impersonation";
+        JsonSerializerOptions _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITokenAcquisition _tokenAcquisition;
@@ -37,13 +38,12 @@ namespace Client.NetCore.Services
 
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
                 var url = $"{apiPart}{id}";
-                var apiData = await _httpClient.GetAsync(url).ConfigureAwait(false);
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var apiData = await _httpClient.GetAsync(url).ConfigureAwait(false);                
 
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
-                    var version = JsonSerializer.Deserialize<VersionDto>(content, options);
+                    var version = JsonSerializer.Deserialize<VersionDto>(content, _options);
                     return version;
                 }
             }
@@ -66,13 +66,12 @@ namespace Client.NetCore.Services
 
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
                 var url = $"{apiPart}";
-                var apiData = await _httpClient.GetAsync(url).ConfigureAwait(false);
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var apiData = await _httpClient.GetAsync(url).ConfigureAwait(false);                
 
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
-                    var version = JsonSerializer.Deserialize<List<VersionDto>>(content, options);
+                    var version = JsonSerializer.Deserialize<List<VersionDto>>(content, _options);
                     return version;
                 }
             }
@@ -95,15 +94,14 @@ namespace Client.NetCore.Services
                 var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
 
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
-                var url = $"{apiPart}";
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var httpcontent = new StringContent(JsonSerializer.Serialize(add, options), Encoding.UTF8, "application/json");
+                var url = $"{apiPart}";                
+                var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
                 var apiData = await _httpClient.PostAsync(url, httpcontent).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
-                    var version = JsonSerializer.Deserialize<VersionDto>(content, options);
+                    var version = JsonSerializer.Deserialize<VersionDto>(content, _options);
                     return version;
                 }
             }
