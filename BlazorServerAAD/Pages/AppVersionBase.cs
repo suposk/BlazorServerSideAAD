@@ -43,6 +43,7 @@ namespace BlazorServerAAD.Pages
                 if (r != null)
                 {
                     var v2 = await GetVersion(r.Version);
+                    var deleted = await DeleteVersion(v.Version);
                 }
             }
         }
@@ -59,7 +60,7 @@ namespace BlazorServerAAD.Pages
 
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);                
                 var url = $"{end}{id}";
-                var apiData = await _httpClient.GetAsync(url);
+                var apiData = await _httpClient.GetAsync(url).ConfigureAwait(false);
                 var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
                 if (apiData.IsSuccessStatusCode)
@@ -91,7 +92,7 @@ namespace BlazorServerAAD.Pages
                 var url = $"{end}";
                 var options = new JsonSerializerOptions {PropertyNameCaseInsensitive = true };
                 var httpcontent = new StringContent(JsonSerializer.Serialize(add, options), Encoding.UTF8, "application/json");
-                var apiData = await _httpClient.PostAsync(url, httpcontent);
+                var apiData = await _httpClient.PostAsync(url, httpcontent).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)
                 {
@@ -105,6 +106,30 @@ namespace BlazorServerAAD.Pages
 
             }
             return null;
+        }
+
+        private async Task<bool> DeleteVersion(int id)
+        {
+            try
+            {
+                if (_httpClient == null)
+                    _httpClient = HttpClientFactory.CreateClient();
+
+                //user_impersonation
+                var apiToken = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "https://jansupolikhotmail.onmicrosoft.com/WebApiNetCore3/user_impersonation" });
+
+                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
+                var url = $"{end}{id}";
+                var apiData = await _httpClient.DeleteAsync(url).ConfigureAwait(false);                
+
+                if (apiData.IsSuccessStatusCode)                
+                    return true;                
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return false;
         }
     }
 

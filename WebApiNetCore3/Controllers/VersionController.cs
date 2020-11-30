@@ -107,5 +107,31 @@ namespace WebApiNetCore3.Controllers
             }
             return result;
         }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteVersion(int id)
+        {
+            if (id < 1)
+                return BadRequest();
+
+            try
+            {
+                _logger.LogInformation(ApiLogEvents.DeleteItem, $"{nameof(DeleteVersion)} Started");
+
+                if (_dic.ContainsKey(id) == false)
+                {
+                    _logger.LogWarning(ApiLogEvents.DeleteItemNotFound, $"{nameof(DeleteVersion)} not found");
+                    return NotFound();
+                }
+
+                _dic.Remove(id);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(DeleteVersion), null);
+                throw;
+            }            
+        }
     }
 }
