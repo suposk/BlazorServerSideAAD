@@ -16,6 +16,8 @@
 <p><em>Loading...</em></p> }
 else
 {
+<h4>Sample text: @message !!!!</h4>
+<h4>ARM: @azureResurce !!!!</h4>
 <h1>Hello @userDisplayName !!!!</h1>
                 <table class="table">
                     <thead>
@@ -38,6 +40,8 @@ else
 
 @code { private WeatherForecast[] forecasts;
     private string userDisplayName;
+    private string message;
+    private string azureResurce;
     private List<MailMessage> messages = new List<MailMessage>();
 
     private HttpClient _httpClient;
@@ -46,14 +50,20 @@ else
     {
         try
         {
+            message = null;
+            azureResurce = null;
+
             var sample = await SampleService.RandomText("Jano");
+            message = sample;
+
+            await Task.Delay(2 * 1000);
 
             _httpClient = HttpClientFactory.CreateClient();
             forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
 
             // get a token
-            var token = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "User.Read", "Mail.Read" });
-            //var token = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "User.Read" });
+            //var token = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "User.Read", "Mail.Read" });
+            var token = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "User.Read" });
 
             // make API call
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
@@ -65,49 +75,38 @@ else
                 userDisplayName = userData.RootElement.GetProperty("displayName").GetString();
             }
 
-            var mailRequest = await _httpClient.GetAsync("https://graph.microsoft.com/beta/me/messages?$select=subject,receivedDateTime,sender&$top=10");
-            //var mailRequest = await _httpClient.GetAsync("https://graph.microsoft.com/beta/me/messages?$select=createdDateTime,subject,from");
+            //var mailRequest = await _httpClient.GetAsync("https://graph.microsoft.com/beta/me/messages?$select=subject,receivedDateTime,sender&$top=10");
+            ////var mailRequest = await _httpClient.GetAsync("https://graph.microsoft.com/beta/me/messages?$select=createdDateTime,subject,from");
 
 
-            if (mailRequest.IsSuccessStatusCode)
-            {
-                var mailData = System.Text.Json.JsonDocument.Parse(await mailRequest.Content.ReadAsStreamAsync());
-                var messagesArray = mailData.RootElement.GetProperty("value").EnumerateArray();
+            //if (mailRequest.IsSuccessStatusCode)
+            //{
+            //    var mailData = System.Text.Json.JsonDocument.Parse(await mailRequest.Content.ReadAsStreamAsync());
+            //    var messagesArray = mailData.RootElement.GetProperty("value").EnumerateArray();
 
-                foreach (var m in messagesArray)
-                {
-                    var message = new MailMessage();
-                    message.Subject = m.GetProperty("subject").GetString();
-                    message.Sender = m.GetProperty("sender").GetProperty("emailAddress").GetProperty("address").GetString();
-                    message.ReceivedTime = m.GetProperty("receivedDateTime").GetDateTime();
-                    messages.Add(message);
-                }
-            }
-
-            //user_impersonation
-            //var apiToken = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "user_impersonation" });
-            var apiToken = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "https://jansupolikhotmail.onmicrosoft.com/WebApiNetCore3/user_impersonation" });
-            if (token != apiToken)
-                Console.WriteLine("Tokens are different");
-
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
-            var apiData = await _httpClient.GetAsync("https://localhost:5011/api/WeatherForecast");
-            if (apiData.IsSuccessStatusCode)
-            {
-                var api = await apiData.Content.ReadAsStreamAsync();
-                // AADSTS65001: The user or administrator has not consented to use the application with ID '8ff7755f-f65f-41ca-9e88-f70215f06fb4' named 'BlazorServerAAD'.Send an interactive authorization request for this user and resource.
-            }
+            //    foreach (var m in messagesArray)
+            //    {
+            //        var message = new MailMessage();
+            //        message.Subject = m.GetProperty("subject").GetString();
+            //        message.Sender = m.GetProperty("sender").GetProperty("emailAddress").GetProperty("address").GetString();
+            //        message.ReceivedTime = m.GetProperty("receivedDateTime").GetDateTime();
+            //        messages.Add(message);
+            //    }
+            //}
 
 
             string[] scopesManagment = new string[] { "https://management.azure.com/.default" };
             string manToken = await TokenAcquisitionService.GetAccessTokenForUserAsync(scopesManagment);
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", manToken);
             var scores = await _httpClient.GetAsync("https://management.azure.com/subscriptions/33fb38df-688e-4ca1-8dd8-b46e26262ff8/providers/Microsoft.Security/secureScores?api-version=2020-01-01-preview");
-
+            if (scores.IsSuccessStatusCode)
+            {
+                azureResurce = "score from  management.azure.com retrived";
+            }
         }
         catch (Exception ex)
         {
-            userDisplayName = ex?.Message;
+            message = ex?.Message;
         }
     }
 
