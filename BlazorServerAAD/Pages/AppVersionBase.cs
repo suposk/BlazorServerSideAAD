@@ -40,14 +40,13 @@ namespace BlazorServerAAD.Pages
             if (v != null)
             {
                 VersionDto add = new VersionDto { Link = "www.bing.com", Version = v.Version + 1, Details= $"Created in client at {DateTime.Now.ToShortTimeString()}" };
-                var r = await AddVersion(add);
-                if (r != null)
-                {
-                    //var v2 = await GetVersion(r.Version);
-                    var all = await GetAllVersion();
-
-                    //var deleted = await DeleteVersion(v.Version);
-                }
+                //var r = await AddVersion(add);
+                //if (r != null)
+                //{
+                //    //var v2 = await GetVersion(r.Version);                    
+                //    //var deleted = await DeleteVersion(v.Version);
+                //}
+                var all = await GetAllVersion();
             }
         }
 
