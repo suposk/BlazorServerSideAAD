@@ -41,7 +41,10 @@ namespace BlazorServerAAD.Pages
                 var apiToken = await TokenAcquisitionService.GetAccessTokenForUserAsync(new string[] { "https://jansupolikhotmail.onmicrosoft.com/WebApiNetCore3/user_impersonation" });
 
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
-                var apiData = await _httpClient.GetAsync("https://localhost:5011/api/version/20000");
+                var id = 20;
+                var url = $"https://localhost:5011/api/version/{id}";
+                var apiData = await _httpClient.GetAsync(url);
+
                 var options = new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
@@ -50,7 +53,7 @@ namespace BlazorServerAAD.Pages
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
-                    var obj = JsonSerializer.Deserialize<VersionDto>(content, options);
+                    var version = JsonSerializer.Deserialize<VersionDto>(content, options);
                 }
             }
             catch (Exception ex)

@@ -18,10 +18,10 @@ namespace WebApiNetCore3.Controllers
     {
         private readonly ILogger<VersionController> _logger;
         private readonly ITokenAcquisition _tokenAcquisition;
-        private static List<VersionDto> _list = new List<VersionDto> 
-        { 
-            new VersionDto { CreatedAt = DateTime.Now.AddDays(-30), Link = "www.sme.sk", Version = 20} ,
-            new VersionDto { CreatedAt = DateTime.Now.AddDays(-1), Link = "www.google.com", Version = 21 , Details = "Some more text"} ,
+        private static Dictionary<int, VersionDto> _dic = new Dictionary<int, VersionDto> 
+        {
+            {20, new VersionDto { CreatedAt = DateTime.Now.AddDays(-30), Link = "www.sme.sk", Version = 20}},
+            {21, new VersionDto { CreatedAt = DateTime.Now.AddDays(-1), Link = "www.google.com", Version = 21 , Details = "Some more text"}},
         };
 
         //static ConcurrentBag<TodoItem> todoStore = new ConcurrentBag<TodoItem>();
@@ -37,21 +37,22 @@ namespace WebApiNetCore3.Controllers
         [HttpGet]
         public List<VersionDto> Get()
         {
-            return _list;
+            return _dic.Values.ToList();
         }
 
         // GET api/<VersionController>/5
         [HttpGet("{id}")]
         public async Task<ActionResult<VersionDto>> Get(int id)
         {
-            var find = _list.FirstOrDefault(a => a.Version == id);
-            if (find != null)
+            if (_dic.TryGetValue(id, out VersionDto find))            
                 return find;
             else
             {
-                var m = _list.Max(a => a.Version);
-                return _list.FirstOrDefault(a => a.Version == m);
+                var max = _dic.Keys.Max();
+                if (_dic.TryGetValue(max, out VersionDto latest))
+                    return latest;
             }
+            return null;
         }
 
         // POST api/<VersionController>
@@ -59,6 +60,9 @@ namespace WebApiNetCore3.Controllers
         //public void PostVersion([FromBody] VersionDto dto)
         public async Task<ActionResult<VersionDto>> PostVersion(VersionDto dto)
         {
+            if (dto == null)
+                return BadRequest();
+
             return null;
         }
     }
