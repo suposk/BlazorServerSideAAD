@@ -23,6 +23,11 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Client.Services;
 using Client.NetCore.Services;
+using Azure.Core;
+using Azure.Security.KeyVault.Secrets;
+using Azure.Identity;
+using Microsoft.Azure.KeyVault;
+using Microsoft.Azure.Services.AppAuthentication;
 //using Microsoft.Extensions.Caching.Cosmos;
 //using Microsoft.Azure.Cosmos.Fluent;
 
@@ -48,6 +53,40 @@ namespace BlazorServerAAD
             //    cacheOptions.ClientBuilder = new CosmosClientBuilder(Configuration["CosmosCache:ConnectionString"]);
             //    cacheOptions.CreateIfNotExists = true;
             //});
+                       
+
+            bool UseKeyVault = Configuration.GetValue<bool>("UseKeyVault");
+            var VaultName = Configuration.GetValue<string>("VaultName");
+            string clientSecret = null;
+            var azureServiceTokenProvider = new AzureServiceTokenProvider();
+            var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
+
+            if (UseKeyVault)
+            {
+                try
+                {
+                    var janoSetting = keyVaultClient.GetSecretAsync(VaultName, "JanoSetting").Result.Value;
+                    Console.WriteLine($"Secret first 3 char: {janoSetting?.Substring(startIndex: 0, length: 3)}");
+
+                    clientSecret = keyVaultClient.GetSecretAsync(VaultName, "ClientSecret").Result.Value;
+                    Console.WriteLine($"Secret first 3 char: {clientSecret?.Substring(startIndex: 0, length: 3)}");
+                }
+                catch (Exception ex)
+                {
+                }
+                //SecretClientOptions options = new SecretClientOptions()
+                //{
+                //    Retry =
+                //    {
+                //        Delay= TimeSpan.FromSeconds(2),
+                //        MaxDelay = TimeSpan.FromSeconds(16),
+                //        MaxRetries = 5,
+                //        Mode = RetryMode.Exponential
+                //     }
+                //};
+                //var client = new SecretClient(new Uri("https://devblazorserversidevault.vault.azure.net/"), new DefaultAzureCredential(), options);
+                //KeyVaultSecret secret = client.GetSecret("ClientSecret");
+            }
 
             string ApiEndpoint = Configuration.GetValue<string>("ApiEndpoint");
             services.AddHttpClient("api", (client) => 
@@ -58,14 +97,16 @@ namespace BlazorServerAAD
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
                 .EnableTokenAcquisitionToCallDownstreamApi()
-                //.EnableTokenAcquisitionToCallDownstreamApi(new string[] { "User.Read", "Mail.Read" })            
-                //.EnableTokenAcquisitionToCallDownstreamApi(new string[] { "User.Read", "Mail.Read", "user_impersonation" })
                 .AddInMemoryTokenCaches()
                 ;
 
             services.Configure<MicrosoftIdentityOptions>(options =>
             {
                 options.ResponseType = OpenIdConnectResponseType.Code;
+
+                if (UseKeyVault)                
+                    options.ClientSecret = clientSecret;                    
+                
             });
 
             services.AddControllersWithViews()
@@ -86,10 +127,8 @@ namespace BlazorServerAAD
             services.AddSingleton<ISampleService, SampleService>();
             services.AddScoped<IVersionService, VersionService>();
 
-            var janoSet = Configuration.GetSection("JanoSetting").Value;
-            Console.WriteLine($"JanoSetting : {janoSet}");
             var sec = Configuration.GetValue<string>("AzureAd:ClientSecret");
-            Console.WriteLine($"Secret first 3 char: {sec.Substring(startIndex:0,length:3)}");
+            Console.WriteLine($"Configuration AzureAd:ClientSecret first 3 char: {sec.Substring(startIndex:0,length:3)}");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
