@@ -52,8 +52,7 @@ namespace BlazorServerAAD
             //    cacheOptions.DatabaseName = Configuration["CosmosCache:DatabaseName"];
             //    cacheOptions.ClientBuilder = new CosmosClientBuilder(Configuration["CosmosCache:ConnectionString"]);
             //    cacheOptions.CreateIfNotExists = true;
-            //});
-                       
+            //});                       
 
             bool UseKeyVault = Configuration.GetValue<bool>("UseKeyVault");
             var VaultName = Configuration.GetValue<string>("VaultName");
@@ -66,26 +65,14 @@ namespace BlazorServerAAD
                 try
                 {
                     var janoSetting = keyVaultClient.GetSecretAsync(VaultName, "JanoSetting").Result.Value;
-                    Console.WriteLine($"Secret first 3 char: {janoSetting?.Substring(startIndex: 0, length: 3)}");
+                    Console.WriteLine($"JanoSetting from Vault: {janoSetting}");
 
                     clientSecret = keyVaultClient.GetSecretAsync(VaultName, "ClientSecret").Result.Value;
-                    Console.WriteLine($"Secret first 3 char: {clientSecret?.Substring(startIndex: 0, length: 3)}");
+                    Console.WriteLine($"ClientSecret first 3 char from Vault: {clientSecret?.Substring(startIndex: 0, length: 3)}");
                 }
                 catch (Exception ex)
                 {
                 }
-                //SecretClientOptions options = new SecretClientOptions()
-                //{
-                //    Retry =
-                //    {
-                //        Delay= TimeSpan.FromSeconds(2),
-                //        MaxDelay = TimeSpan.FromSeconds(16),
-                //        MaxRetries = 5,
-                //        Mode = RetryMode.Exponential
-                //     }
-                //};
-                //var client = new SecretClient(new Uri("https://devblazorserversidevault.vault.azure.net/"), new DefaultAzureCredential(), options);
-                //KeyVaultSecret secret = client.GetSecret("ClientSecret");
             }
 
             string ApiEndpoint = Configuration.GetValue<string>("ApiEndpoint");
@@ -126,6 +113,9 @@ namespace BlazorServerAAD
             services.AddSingleton<WeatherForecastService>();
             services.AddSingleton<ISampleService, SampleService>();
             services.AddScoped<IVersionService, VersionService>();
+
+            var jano = Configuration.GetValue<string>("JanoSetting");
+            Console.WriteLine($"Configuration JanoSetting: {jano}");
 
             var sec = Configuration.GetValue<string>("AzureAd:ClientSecret");
             Console.WriteLine($"Configuration AzureAd:ClientSecret first 3 char: {sec.Substring(startIndex:0,length:3)}");
