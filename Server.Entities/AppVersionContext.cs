@@ -66,7 +66,7 @@ namespace Server.Entities
                     ReleasedAt = new DateTime(2020, 11, 22, 16, 0, 0), 
                     Details = "<p>This is version 20</p>", 
                     DetailsFormat = "html", 
-                    Link = "www.sme.sk", 
+                    Link = "www.bing.com", 
                     RecomendedAction = RecomendedAction.None,                     
                 },
                 new AppVersion()
@@ -76,7 +76,7 @@ namespace Server.Entities
                     VersionFull = "1.0.21.0",
                     CreatedAt = new DateTime(2020, 11, 25, 11, 0, 0),
                     ReleasedAt = new DateTime(2020, 11, 25, 17, 0, 0),
-                    Details = "This is version 21",
+                    Details = "This is version 21, modified at 5:00 pm",
                     DetailsFormat = "text",
                     Link = "www.google.sk",
                     RecomendedAction = RecomendedAction.Warning,
