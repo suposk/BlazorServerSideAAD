@@ -21,6 +21,8 @@ namespace Server.Entities
 
         public int VersionValue { get; set; }
 
+        public string VersionFull { get; set; }
+
         public string Link { get; set; }
 
         public string Details { get; set; }

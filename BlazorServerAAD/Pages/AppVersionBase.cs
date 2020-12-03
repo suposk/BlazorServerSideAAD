@@ -52,6 +52,7 @@ namespace BlazorServerAAD.Pages
                 await Task.Delay(sec * 1000);
 
                 Result = $"Found {all.Count} version. Loaded with {sec} second of simulation delay";
+                Result += $"\nLatest Version is {v.VersionFull}";
             }
         }
 

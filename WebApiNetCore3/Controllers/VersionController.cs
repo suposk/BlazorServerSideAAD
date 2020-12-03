@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Web;
@@ -13,46 +15,63 @@ using System.Threading.Tasks;
 
 namespace WebApiNetCore3.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class VersionController : ControllerBase
     {
         private readonly ILogger<VersionController> _logger;
         private readonly IRepository<AppVersion> _repository;
-        
+        private readonly IVersionRepository _versionRepository;
+        private readonly IMapper _mapper;
 
-        public VersionController(ILogger<VersionController> logger, IRepository<AppVersion> repository)
+        public VersionController(ILogger<VersionController> logger, 
+            IRepository<AppVersion> repository,
+            IVersionRepository versionRepository,
+            IMapper mapper)
         {
             _logger = logger;
             _repository = repository;
+            _versionRepository = versionRepository;
+            _mapper = mapper;
         }
 
         // GET: api/<VersionController>
         [HttpGet]
-        public  List<AppVersionDto> Get()
-        {
-            _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(Get)} Started");
-            var all = _repository.GetAll();
-            return null;
+        public async Task<ActionResult<List<AppVersionDto>>> Get()
+        {           
+            try
+            {
+                _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(Get)} Started");
+
+                var all = await _repository.GetAllAsync();
+                var result = _mapper.Map<List<AppVersionDto>>(all);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }            
         }
 
         // GET api/<VersionController>/5
-        [HttpGet("{id}", Name = "GetVersion")]
-        public async Task<ActionResult<AppVersionDto>> GetVersion(int id)
+        [HttpGet("{version}", Name = "GetVersion")]
+        public async Task<ActionResult<AppVersionDto>> GetVersion(string version)
         {
-            _logger.LogInformation(ApiLogEvents.GetItem, $"{nameof(GetVersion)} Started");
-            var all = await _repository.GetAllAsync();
+            try
+            {
+                _logger.LogInformation(ApiLogEvents.GetItem, $"{nameof(GetVersion)} Started");
 
-            //if (_dic.TryGetValue(id, out AppVersionDto find))            
-            //    return find;
-            //else
-            //{
-            //    var max = _dic.Keys.Max();
-            //    if (_dic.TryGetValue(max, out AppVersionDto latest))
-            //        return latest;
-            //}
-            return null;
+                AppVersionDto result = null;
+                var res = await _versionRepository.GetVersion(version.ToString());
+                result = _mapper.Map<AppVersionDto>(res);
+                return result;
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }            
         }
     }
 }

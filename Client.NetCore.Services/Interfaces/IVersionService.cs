@@ -9,6 +9,6 @@ namespace Client.NetCore.Services
         Task<VersionDto> AddVersion(VersionDto add);
         Task<bool> DeleteVersion(int id);
         Task<List<VersionDto>> GetAllVersion();
-        Task<VersionDto> GetVersion(int id = 1);
+        Task<VersionDto> GetVersion(string version = "0");
     }
 }

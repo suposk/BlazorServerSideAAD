@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
 //using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Builder;
@@ -42,12 +43,16 @@ namespace WebApiNetCore3
             //    .AddInMemoryTokenCaches();
             //;
 
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
             services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
                     .AddMicrosoftIdentityWebApi(Configuration, "AzureAd")
                         .EnableTokenAcquisitionToCallDownstreamApi()
                         .AddInMemoryTokenCaches();
 
             services.AddControllers();
+            services.AddScoped<IVersionRepository, VersionRepository>();
+
             services.AddScoped<IRepository<AppVersion>>(sp =>
             {
                 var serviceProvider = services.BuildServiceProvider();

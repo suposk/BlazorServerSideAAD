@@ -18,4 +18,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Server.Entities\Server.Entities.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -20,6 +20,8 @@ namespace WebApiNetCore3
 
         public int VersionValue { get; set; }
 
+        public string VersionFull { get; set; }
+
         public string Link { get; set; }
 
         public string Details { get; set; }

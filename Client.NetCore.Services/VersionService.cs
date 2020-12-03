@@ -26,7 +26,7 @@ namespace Client.NetCore.Services
             _tokenAcquisition = tokenAcquisition;
         }
 
-        public async Task<VersionDto> GetVersion(int id = 1)
+        public async Task<VersionDto> GetVersion(string version = "0")
         {
             try
             {
@@ -37,14 +37,14 @@ namespace Client.NetCore.Services
                 var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
 
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
-                var url = $"{apiPart}{id}";
+                var url = $"{apiPart}{version}";
                 var apiData = await _httpClient.GetAsync(url).ConfigureAwait(false);                
 
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
-                    var version = JsonSerializer.Deserialize<VersionDto>(content, _options);
-                    return version;
+                    var result = JsonSerializer.Deserialize<VersionDto>(content, _options);
+                    return result;
                 }
             }
             catch (Exception ex)

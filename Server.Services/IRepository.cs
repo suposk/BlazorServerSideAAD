@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
@@ -8,6 +9,8 @@ namespace Server.Services
 {
     public interface IRepository<TModel> where TModel : class
     {
+        DbContext DatabaseContext { get; }
+
         TModel Get(int id);
 
         Task<TModel> GetAsync(int id);
@@ -18,7 +21,7 @@ namespace Server.Services
         void Remove(TModel entity);
 
         Task<bool> SaveChangesAsync();
-
-        Task<T> GetByFilter<T>(Expression<Func<T, bool>> expression) where T : class;
+        Task<TModel> GetByFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes);
+        Task<TModel> GetByFilter(Expression<Func<TModel, bool>> expression);
     }
 }

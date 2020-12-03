@@ -10,7 +10,7 @@ namespace Server.Services
 {
     public class Repository<TModel> : IRepository<TModel> where TModel : class
     {
-        protected readonly DbContext DatabaseContext;
+        public DbContext DatabaseContext { get; private set; }
 
         public Repository(DbContext context)
         {
@@ -27,9 +27,20 @@ namespace Server.Services
             return DatabaseContext.Set<TModel>().Find(id);
         }
 
-        public Task<T> GetByFilter<T>(Expression<Func<T, bool>> expression) where T : class
+        public Task<TModel> GetByFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes)
         {
-            return DatabaseContext.Set<T>().FirstOrDefaultAsync(expression);
+            DbSet<TModel> dbSet = DatabaseContext.Set<TModel>();
+            IQueryable<TModel> query = null;
+            foreach (var includeExpression in includes)
+            {
+                query = dbSet.Include(includeExpression);
+            }
+            return query.FirstOrDefaultAsync(expression);
+        }
+
+        public Task<TModel> GetByFilter(Expression<Func<TModel, bool>> expression)
+        {
+            return DatabaseContext.Set<TModel>().FirstOrDefaultAsync(expression);
         }
 
         public List<TModel> GetAll()

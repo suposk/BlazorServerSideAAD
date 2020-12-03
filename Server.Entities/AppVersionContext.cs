@@ -61,6 +61,7 @@ namespace Server.Entities
                 {
                     Id = 20,
                     VersionValue = 20,
+                    VersionFull = "1.0.20.0",
                     CreatedAt = new DateTime(2020, 11, 22, 10, 0,0), 
                     ReleasedAt = new DateTime(2020, 11, 22, 16, 0, 0), 
                     Details = "<p>This is version 20</p>", 
@@ -72,6 +73,7 @@ namespace Server.Entities
                 {
                     Id = 21,
                     VersionValue = 21,
+                    VersionFull = "1.0.21.0",
                     CreatedAt = new DateTime(2020, 11, 25, 11, 0, 0),
                     ReleasedAt = new DateTime(2020, 11, 25, 17, 0, 0),
                     Details = "This is version 21",
