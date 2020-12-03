@@ -24,6 +24,7 @@ namespace WebApiNetCore3
             using (var scope = host.Services.CreateScope())
             {
                 ILogger<Program> logger = null;
+                AppVersionContext context = null;
                 try
                 {
                     logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
@@ -34,20 +35,30 @@ namespace WebApiNetCore3
                 {
                     logger?.LogInformation("CreateHostBuilder Started");
 
-                    var context = scope.ServiceProvider.GetService<AppVersionContext>();
+                    context = scope.ServiceProvider.GetService<AppVersionContext>();
 
                     // for demo purposes, delete the database & migrate on startup so we can start with a clean slate                   
                     //context.Database.EnsureDeleted(); logger?.LogInformation("Called EnsureDeleted");
-                    context.Database.EnsureCreated(); logger?.LogInformation("Called EnsureCreated");
-                    context.Database.Migrate(); logger?.LogInformation("Called Migrate");
+                    context?.Database.EnsureCreated(); logger?.LogInformation("Called EnsureCreated");
+                    context?.Database.Migrate(); logger?.LogInformation("Called Migrate");
                 }
                 catch (Exception ex)
                 {
                     logger?.LogError(ex, "An error occurred while migrating the database.");
+
+                    try
+                    {
+                        context?.Database.EnsureDeleted(); logger?.LogInformation("Called EnsureCreated");
+                        context?.Database.Migrate(); logger?.LogInformation("Called Migrate");
+                    }
+                    catch (Exception e)
+                    {
+                        logger?.LogError(e, "An error occurred while migrating the database.");
+                    }
                 }
+                // run the web app
+                host.Run();
             }
-            // run the web app
-            host.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
