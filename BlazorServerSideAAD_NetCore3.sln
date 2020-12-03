@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client.NetCore.Services", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server.Services", "Server.Services\Server.Services.csproj", "{51EA1C88-FBEA-4BC2-9815-298392F73D39}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server.Entities", "Server.Entities\Server.Entities.csproj", "{38835990-1702-4E25-816C-25D0C557467D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{51EA1C88-FBEA-4BC2-9815-298392F73D39}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51EA1C88-FBEA-4BC2-9815-298392F73D39}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51EA1C88-FBEA-4BC2-9815-298392F73D39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38835990-1702-4E25-816C-25D0C557467D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38835990-1702-4E25-816C-25D0C557467D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38835990-1702-4E25-816C-25D0C557467D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38835990-1702-4E25-816C-25D0C557467D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

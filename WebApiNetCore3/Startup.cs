@@ -10,7 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Web;
-using Server.Entities.DbContext;
+using Server.Entities;
+using Server.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,6 +48,17 @@ namespace WebApiNetCore3
                         .AddInMemoryTokenCaches();
 
             services.AddControllers();
+            services.AddScoped<IRepository<AppVersion>>(sp =>
+            {
+                var serviceProvider = services.BuildServiceProvider();
+                var ctx = serviceProvider.GetService<AppVersionContext>();                
+
+                //var ctx = new AppVersionContext(Configuration.GetConnectionString("SqlLiteConnString"));
+                //if (ctx.ChangeTracker != null)
+                //    ctx.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+                IRepository<AppVersion> obj = new Repository<AppVersion>(ctx);
+                return obj;
+            });
 
             services.AddDbContext<AppVersionContext>(options =>
             {

@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Web;
+using Server.Entities;
+using Server.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,31 +13,28 @@ using System.Threading.Tasks;
 
 namespace WebApiNetCore3.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class VersionController : ControllerBase
     {
-        private readonly ILogger<VersionController> _logger;        
-        private static Dictionary<int, AppVersionDto> _dic = new Dictionary<int, AppVersionDto> 
-        {
-            {20, new AppVersionDto { CreatedAt = DateTime.Now.AddDays(-30), Link = "www.sme.sk", VersionValue = 20}},
-            {21, new AppVersionDto { CreatedAt = DateTime.Now.AddDays(-1), Link = "www.google.com", VersionValue = 21 , Details = "Some more text"}},
-        };
+        private readonly ILogger<VersionController> _logger;
+        private readonly IRepository<AppVersion> _repository;
+        
 
-        //static ConcurrentBag<TodoItem> todoStore = new ConcurrentBag<TodoItem>();
-
-        public VersionController(ILogger<VersionController> logger)
+        public VersionController(ILogger<VersionController> logger, IRepository<AppVersion> repository)
         {
-            _logger = logger;                        
+            _logger = logger;
+            _repository = repository;
         }
 
         // GET: api/<VersionController>
         [HttpGet]
-        public List<AppVersionDto> Get()
+        public  List<AppVersionDto> Get()
         {
             _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(Get)} Started");
-            return _dic.Values.ToList();
+            var all = _repository.GetAll();
+            return null;
         }
 
         // GET api/<VersionController>/5
@@ -43,15 +42,16 @@ namespace WebApiNetCore3.Controllers
         public async Task<ActionResult<AppVersionDto>> GetVersion(int id)
         {
             _logger.LogInformation(ApiLogEvents.GetItem, $"{nameof(GetVersion)} Started");
+            var all = await _repository.GetAllAsync();
 
-            if (_dic.TryGetValue(id, out AppVersionDto find))            
-                return find;
-            else
-            {
-                var max = _dic.Keys.Max();
-                if (_dic.TryGetValue(max, out AppVersionDto latest))
-                    return latest;
-            }
+            //if (_dic.TryGetValue(id, out AppVersionDto find))            
+            //    return find;
+            //else
+            //{
+            //    var max = _dic.Keys.Max();
+            //    if (_dic.TryGetValue(max, out AppVersionDto latest))
+            //        return latest;
+            //}
             return null;
         }
     }

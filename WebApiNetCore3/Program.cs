@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Server.Entities.DbContext;
+using Server.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,6 +46,8 @@ namespace WebApiNetCore3
                     logger?.LogError(ex, "An error occurred while migrating the database.");
                 }
             }
+            // run the web app
+            host.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
