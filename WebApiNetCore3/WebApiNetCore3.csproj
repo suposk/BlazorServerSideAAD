@@ -22,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Server.Entities\Server.Entities.csproj" />
     <ProjectReference Include="..\Server.Services\Server.Services.csproj" />
   </ItemGroup>
 
