@@ -51,6 +51,7 @@ namespace WebApiNetCore3
                         .AddInMemoryTokenCaches();
 
             services.AddControllers();
+            //services.AddControllers(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
             services.AddScoped<IVersionRepository, VersionRepository>();
 
             services.AddScoped<IRepository<AppVersion>>(sp =>

@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 namespace WebApiNetCore3.Controllers
 {
     [Authorize]
+    //[AutoValidateAntiforgeryToken]
     [Route("api/[controller]")]
     [ApiController]
     public class VersionController : ControllerBase
@@ -63,7 +64,7 @@ namespace WebApiNetCore3.Controllers
                 _logger.LogInformation(ApiLogEvents.GetItem, $"{nameof(GetVersion)} Started");
 
                 AppVersionDto result = null;
-                var res = await _versionRepository.GetVersion(version.ToString());
+                var res = await _versionRepository.GetVersion(version);
                 result = _mapper.Map<AppVersionDto>(res);
                 return result;
 
